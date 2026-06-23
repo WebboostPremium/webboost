@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { motion } from 'framer-motion'
 import { auth, isFirebaseConfigured } from '../lib/firebase'
@@ -7,6 +7,7 @@ import { SITE } from '../config/site'
 
 export default function AuthPage({ mode = 'login' }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const isRegister = mode === 'register'
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -31,7 +32,8 @@ export default function AuthPage({ mode = 'login' }) {
       } else {
         await signInWithEmailAndPassword(auth, email, password)
       }
-      navigate('/')
+      const from = location.state?.from || '/panel'
+      navigate(from)
     } catch (err) {
       const messages = {
         'auth/email-already-in-use': 'Este correo ya está registrado.',
@@ -101,6 +103,14 @@ export default function AuthPage({ mode = 'login' }) {
               placeholder="Mínimo 6 caracteres"
             />
           </label>
+
+          {!isRegister && (
+            <p className="text-right">
+              <Link to="/recuperar-contrasena" className="text-xs text-electric font-semibold hover:underline">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </p>
+          )}
 
           {error && (
             <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">{error}</p>

@@ -34,6 +34,7 @@ export const NAV_LINKS = [
   { label: 'Servicios', to: '/servicios' },
   { label: 'Precios', to: '/precios' },
   { label: 'Portafolio', to: '/portafolio' },
+  { label: 'Blog', to: '/blog' },
   { label: 'Nosotros', to: '/nosotros' },
   { label: 'Afiliados', to: '/afiliados' },
 ]

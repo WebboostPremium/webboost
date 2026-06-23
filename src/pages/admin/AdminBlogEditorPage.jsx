@@ -1,0 +1,124 @@
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import DashboardLayout from '../../layouts/DashboardLayout'
+import { savePost, getPostById } from '../../lib/blog'
+import { useAuth } from '../../context/AuthContext'
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+export default function AdminBlogEditorPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const isNew = id === 'nuevo'
+
+  const [form, setForm] = useState({
+    title: '',
+    slug: '',
+    excerpt: '',
+    content: '',
+    published: false,
+    coverImage: '',
+  })
+  const [loading, setLoading] = useState(!isNew)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (isNew) return
+    getPostById(id).then((post) => {
+      if (post) setForm({
+        title: post.title || '',
+        slug: post.slug || '',
+        excerpt: post.excerpt || '',
+        content: post.content || '',
+        published: !!post.published,
+        coverImage: post.coverImage || '',
+      })
+      setLoading(false)
+    })
+  }, [id, isNew])
+
+  function handleTitleChange(title) {
+    setForm((prev) => ({
+      ...prev,
+      title,
+      slug: isNew || !prev.slug ? slugify(title) : prev.slug,
+    }))
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      await savePost({
+        id: isNew ? undefined : id,
+        ...form,
+        authorId: user?.uid,
+        authorName: user?.displayName || user?.email || '',
+      })
+      navigate('/admin/blog')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <DashboardLayout variant="admin">
+        <div className="h-48 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-electric border-t-transparent rounded-full animate-spin" />
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  return (
+    <DashboardLayout variant="admin">
+      <h1 className="heading-xl text-2xl md:text-3xl text-ink mb-8">
+        {isNew ? 'Nuevo artículo' : 'Editar artículo'}
+      </h1>
+
+      <form onSubmit={handleSubmit} className="rounded-2xl bg-white border border-slate-100 p-6 space-y-4 max-w-3xl">
+        <div>
+          <label className="text-sm font-semibold text-slate-600 block mb-1">Título</label>
+          <input required value={form.title} onChange={(e) => handleTitleChange(e.target.value)} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm" />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-slate-600 block mb-1">Slug (URL)</label>
+          <input required value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-mono" />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-slate-600 block mb-1">Extracto</label>
+          <textarea value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm min-h-[80px]" />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-slate-600 block mb-1">Contenido</label>
+          <textarea required value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm min-h-[240px]" />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-slate-600 block mb-1">Imagen de portada (URL)</label>
+          <input value={form.coverImage} onChange={(e) => setForm({ ...form, coverImage: e.target.value })} className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm" />
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} />
+          Publicar inmediatamente
+        </label>
+        <div className="flex gap-3 pt-2">
+          <button type="submit" disabled={saving} className="btn-cta disabled:opacity-60">
+            {saving ? 'Guardando...' : 'Guardar'}
+          </button>
+          <button type="button" onClick={() => navigate('/admin/blog')} className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </DashboardLayout>
+  )
+}

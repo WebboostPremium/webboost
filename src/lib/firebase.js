@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
 import { getAnalytics, isSupported } from 'firebase/analytics'
 
 const firebaseConfig = {
@@ -21,17 +22,19 @@ export const isFirebaseConfigured = Boolean(
 
 let app = null
 let auth = null
+let db = null
 
 try {
   if (isFirebaseConfigured) {
     app = initializeApp(firebaseConfig)
     auth = getAuth(app)
+    db = getFirestore(app)
   }
 } catch (error) {
   console.error('Firebase init failed:', error)
 }
 
-export { auth }
+export { auth, db }
 
 export let analytics = null
 if (app) {
@@ -42,4 +45,12 @@ if (app) {
     .catch((error) => {
       console.error('Firebase analytics failed:', error)
     })
+}
+
+export function getAdminEmails() {
+  const raw = import.meta.env.VITE_ADMIN_EMAILS || ''
+  return raw
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
 }

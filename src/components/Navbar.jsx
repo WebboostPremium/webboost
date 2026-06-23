@@ -12,7 +12,7 @@ const navClass = ({ isActive }) =>
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
-  const { user, logout } = useAuth()
+  const { user, logout, isAdmin } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -52,7 +52,10 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-slate-500 max-w-[120px] truncate">
+              <Link to={isAdmin ? '/admin' : '/panel'} className="text-sm font-medium text-electric hover:underline">
+                {isAdmin ? 'Admin' : 'Mi panel'}
+              </Link>
+              <span className="text-sm text-slate-500 max-w-[120px] truncate hidden lg:inline">
                 {user.displayName || user.email}
               </span>
               <button type="button" onClick={handleLogout} className="text-sm font-medium text-slate-500 hover:text-ink flex items-center gap-1">
@@ -91,9 +94,14 @@ export default function Navbar() {
               </NavLink>
             ))}
             {user ? (
-              <button type="button" onClick={handleLogout} className="py-2.5 text-base font-medium text-slate-600 text-left">
-                Cerrar sesión
-              </button>
+              <>
+                <Link to={isAdmin ? '/admin' : '/panel'} onClick={() => setOpen(false)} className="py-2.5 text-base font-medium text-electric">
+                  {isAdmin ? 'Panel admin' : 'Mi panel'}
+                </Link>
+                <button type="button" onClick={handleLogout} className="py-2.5 text-base font-medium text-slate-600 text-left">
+                  Cerrar sesión
+                </button>
+              </>
             ) : (
               <Link to="/iniciar-sesion" onClick={() => setOpen(false)} className="py-2.5 text-base font-medium text-slate-600">
                 Iniciar sesión
