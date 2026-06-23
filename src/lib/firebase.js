@@ -19,12 +19,27 @@ export const isFirebaseConfigured = Boolean(
   firebaseConfig.appId,
 )
 
-const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null
-export const auth = app ? getAuth(app) : null
+let app = null
+let auth = null
+
+try {
+  if (isFirebaseConfigured) {
+    app = initializeApp(firebaseConfig)
+    auth = getAuth(app)
+  }
+} catch (error) {
+  console.error('Firebase init failed:', error)
+}
+
+export { auth }
 
 export let analytics = null
 if (app) {
-  isSupported().then((supported) => {
-    if (supported) analytics = getAnalytics(app)
-  })
+  isSupported()
+    .then((supported) => {
+      if (supported) analytics = getAnalytics(app)
+    })
+    .catch((error) => {
+      console.error('Firebase analytics failed:', error)
+    })
 }
