@@ -1,0 +1,18 @@
+{
+  "name": "WebBooost",
+  "short_name": "WebBooost",
+  "description": "Diseño web, automatización y publicidad digital. Impulsamos tu negocio.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFF",
+  "theme_color": "#1A6BFF",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/webbooost-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
