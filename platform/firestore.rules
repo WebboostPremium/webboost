@@ -1,0 +1,145 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && userDoc().role == 'admin';
+    }
+
+    function isClientOwner(clientId) {
+      return isSignedIn() && request.auth.uid == clientId;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+    }
+
+    match /demoRequests/{id} {
+      allow create: if true;
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /leads/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    match /proposals/{id} {
+      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow write: if isAdmin();
+    }
+
+    match /projects/{id} {
+      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow write: if isAdmin();
+    }
+
+    match /payments/{id} {
+      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow write: if isAdmin();
+    }
+
+    match /businesses/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || (isSignedIn() && resource.data.ownerId == request.auth.uid);
+    }
+
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAdmin() || isSignedIn();
+    }
+
+    match /orders/{id} {
+      allow read, write: if isAdmin() || isSignedIn();
+    }
+
+    match /assets/{id} {
+      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin() || isClientOwner(resource.data.clientId);
+    }
+
+    match /tickets/{id} {
+      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow create: if isSignedIn();
+      allow update: if isAdmin() || isClientOwner(resource.data.clientId);
+    }
+
+    match /affiliates/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    match /referrals/{id} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /prospects/{id} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin() || (isSignedIn() && resource.data.affiliateId == request.auth.uid);
+      allow update: if isAdmin() || (isSignedIn() && resource.data.affiliateId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /prospectHistory/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /commissions/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.affiliateId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    match /reminders/{id} {
+      allow read, write: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn();
+    }
+
+    match /notifications/{id} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || resource.data.userId == '__admins__' || isAdmin());
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() || isAdmin();
+    }
+
+    match /auditLogs/{id} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /projectTimeline/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /clientTickets/{id} {
+      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow create: if isSignedIn();
+      allow update: if isAdmin() || isClientOwner(resource.data.clientId);
+    }
+
+    match /demoWizardSessions/{id} {
+      allow create: if true;
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow update: if isAdmin();
+    }
+  }
+}
