@@ -19,11 +19,10 @@ export const SITE = {
 
 export const NAV_LINKS = [
   { label: 'Servicios', href: '/servicios' },
-  { label: 'Apps', href: '/apps' },
-  { label: 'Precios', href: '/precios' },
   { label: 'Portafolio', href: '/portafolio' },
-  { label: 'Nosotros', href: '/nosotros' },
-  { label: 'Afiliados', href: '/afiliados' },
+  { label: 'Precios', href: '/precios' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Demo Personalizada ($5)', href: '/demo' },
 ] as const
 
 export const CUSTOM_SERVICES = [

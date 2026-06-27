@@ -11,6 +11,11 @@ interface LinkItem {
   label: string
 }
 
+function isActivePath(pathname: string, href: string) {
+  if (pathname === href) return true
+  return pathname.startsWith(`${href}/`)
+}
+
 export function DashboardShell({
   title,
   links,
@@ -42,7 +47,7 @@ export function DashboardShell({
               key={l.href}
               href={l.href}
               className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                pathname === l.href ? 'bg-electric/10 text-electric' : 'text-slate-600 hover:bg-slate-100'
+                isActivePath(pathname, l.href) ? 'bg-electric/10 text-electric' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
               {l.label}

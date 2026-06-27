@@ -1,12 +1,6 @@
 import { DashboardShell } from '@/components/dashboard/DashboardShell'
-
-const links = [
-  { href: '/afiliado/dashboard', label: 'Resumen' },
-  { href: '/afiliado/dashboard/prospectos', label: 'Mis Prospectos' },
-  { href: '/afiliado/dashboard/comisiones', label: 'Comisiones' },
-  { href: '/afiliado/dashboard/recordatorios', label: 'Recordatorios' },
-]
+import { AFFILIATE_NAV } from '@/config/navigation'
 
 export default function AffiliateLayout({ children }: { children: React.ReactNode }) {
-  return <DashboardShell title="Panel afiliado" links={links}>{children}</DashboardShell>
+  return <DashboardShell title="Dashboard Afiliado" links={[...AFFILIATE_NAV]}>{children}</DashboardShell>
 }

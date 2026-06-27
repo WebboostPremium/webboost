@@ -118,3 +118,20 @@ export function computeAffiliateStats(prospects: Prospect[]) {
   const conversion = total ? Math.round((closed / total) * 100) : 0
   return { total, closed, conversion }
 }
+
+export async function listAffiliateFollowUps(affiliateId: string) {
+  const prospects = await listProspectsByAffiliate(affiliateId)
+  const entries = await Promise.all(
+    prospects.map(async (p) => {
+      const history = await getProspectHistory(p.id)
+      return history.map((h) => ({ ...h, prospectId: p.id, prospectName: p.companyName }))
+    }),
+  )
+  return entries
+    .flat()
+    .sort((a, b) => {
+      const ta = (a.createdAt as { seconds?: number })?.seconds ?? 0
+      const tb = (b.createdAt as { seconds?: number })?.seconds ?? 0
+      return tb - ta
+    })
+}

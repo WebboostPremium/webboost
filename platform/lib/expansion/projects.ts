@@ -58,3 +58,10 @@ export async function getClientProjects(clientId: string) {
   const snap = await getDocs(q)
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
 }
+
+export async function listAllProjects() {
+  if (!db) return []
+  const q = query(collection(db, COLLECTIONS.projects), orderBy('createdAt', 'desc'))
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+}

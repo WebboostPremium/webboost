@@ -70,7 +70,7 @@ export function Navbar() {
               Iniciar sesión
             </Link>
           )}
-          <Link href="/demo" className="btn-outline border-slate-200">Solicitar demo</Link>
+          <Link href="/demo" className="btn-outline border-slate-200">Demo $5</Link>
         </div>
 
         <button className="md:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menú">
@@ -106,7 +106,7 @@ export function Navbar() {
               </Link>
             )}
             <Link href="/demo" onClick={() => setOpen(false)} className="btn-cta mt-3 w-full text-center">
-              Solicitar demo
+              Demo Personalizada ($5)
             </Link>
           </motion.div>
         )}
