@@ -109,14 +109,17 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired' | 'refunde
 
 export interface Payment {
   id: string
-  clientId: string
+  clientId?: string
+  clientEmail?: string
   demoId?: string
+  demoSessionId?: string
   proposalId?: string
   businessId?: string
   amount: number
   currency: string
   type: PaymentType
   status: PaymentStatus
+  description?: string
   wompiLink?: string
   wompiTransactionId?: string
   createdAt: Timestamp | Date

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthProvider'
 import { StepProgress } from '@/components/ui/ProgressBar'
 import { useToast } from '@/components/ui/ToastProvider'
 import { SITE } from '@/config/site'
@@ -33,6 +34,7 @@ const emptyData = (): DemoWizardData => ({
 export function DemoWizard() {
   const router = useRouter()
   const { toast } = useToast()
+  const { user } = useAuth()
   const [step, setStep] = useState(0)
   const [data, setData] = useState<DemoWizardData>(emptyData)
   const [saving, setSaving] = useState(false)
@@ -63,6 +65,7 @@ export function DemoWizard() {
       if (db) {
         await setDoc(doc(db, COLLECTIONS.demoWizardSessions, sessionId), {
           email: data.businessInfo.email,
+          userId: user?.uid || '',
           data,
           amount: SITE.demoPrice,
           paymentStatus: 'pending',

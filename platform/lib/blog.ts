@@ -13,6 +13,9 @@ import {
   limit,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/client'
+import { COLLECTIONS } from '@/lib/constants/collections'
+
+const BLOG = COLLECTIONS.blogPosts
 
 function slugify(text: string) {
   return text
@@ -40,7 +43,7 @@ export type BlogPost = {
 export async function listPublishedPosts(max = 50) {
   if (!db) return []
   const q = query(
-    collection(db, 'blogPosts'),
+    collection(db, BLOG),
     where('published', '==', true),
     orderBy('createdAt', 'desc'),
     limit(max),
@@ -51,14 +54,14 @@ export async function listPublishedPosts(max = 50) {
 
 export async function listAllPosts() {
   if (!db) return []
-  const q = query(collection(db, 'blogPosts'), orderBy('createdAt', 'desc'))
+  const q = query(collection(db, BLOG), orderBy('createdAt', 'desc'))
   const snap = await getDocs(q)
   return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as BlogPost[]
 }
 
 export async function getPostBySlug(slug: string, { includeDrafts = false } = {}) {
   if (!db || !slug) return null
-  const q = query(collection(db, 'blogPosts'), where('slug', '==', slug), limit(1))
+  const q = query(collection(db, BLOG), where('slug', '==', slug), limit(1))
   const snap = await getDocs(q)
   if (snap.empty) return null
   const d = snap.docs[0]
@@ -69,7 +72,7 @@ export async function getPostBySlug(slug: string, { includeDrafts = false } = {}
 
 export async function getPostById(id: string) {
   if (!db || !id) return null
-  const snap = await getDoc(doc(db, 'blogPosts', id))
+  const snap = await getDoc(doc(db, BLOG, id))
   return snap.exists() ? ({ id: snap.id, ...snap.data() } as BlogPost) : null
 }
 
@@ -99,18 +102,18 @@ export async function savePost(data: {
   }
 
   if (data.id) {
-    await updateDoc(doc(db, 'blogPosts', data.id), payload)
+    await updateDoc(doc(db, BLOG, data.id), payload)
     return { id: data.id, ...payload }
   }
 
-  const ref = doc(collection(db, 'blogPosts'))
+  const ref = doc(collection(db, BLOG))
   await setDoc(ref, { ...payload, createdAt: serverTimestamp() })
   return { id: ref.id, ...payload }
 }
 
 export async function deletePost(id: string) {
   if (!db) throw new Error('Firestore no configurado')
-  await deleteDoc(doc(db, 'blogPosts', id))
+  await deleteDoc(doc(db, BLOG, id))
 }
 
 export function formatPostDate(createdAt?: BlogPost['createdAt']) {

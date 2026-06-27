@@ -50,7 +50,9 @@ service cloud.firestore {
     }
 
     match /payments/{id} {
-      allow read: if isAdmin() || isClientOwner(resource.data.clientId);
+      allow read: if isAdmin()
+        || (resource.data.clientId != null && isClientOwner(resource.data.clientId))
+        || (isSignedIn() && resource.data.clientEmail == request.auth.token.email);
       allow write: if isAdmin();
     }
 
@@ -140,6 +142,16 @@ service cloud.firestore {
       allow create: if true;
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow update: if isAdmin();
+    }
+
+    match /blogPosts/{id} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /platformSettings/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
   }
 }

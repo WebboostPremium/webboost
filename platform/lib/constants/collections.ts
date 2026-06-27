@@ -21,4 +21,6 @@ export const COLLECTIONS = {
   projectTimeline: 'projectTimeline',
   clientTickets: 'clientTickets',
   demoWizardSessions: 'demoWizardSessions',
+  blogPosts: 'blogPosts',
+  platformSettings: 'platformSettings',
 } as const
