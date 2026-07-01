@@ -16,6 +16,7 @@ export const CLIENT_NAV = [
 ] as const
 
 export const AFFILIATE_NAV = [
+  { href: '/afiliado/dashboard', label: 'Inicio', exact: true },
   { href: '/afiliado/dashboard/crm', label: 'CRM' },
   { href: '/afiliado/dashboard/prospectos', label: 'Prospectos' },
   { href: '/afiliado/dashboard/seguimientos', label: 'Seguimientos' },

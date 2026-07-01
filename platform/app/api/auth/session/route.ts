@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { getAdminAuth, getAdminDb } from '@/lib/firebase/admin'
 import { createSessionToken, COOKIE_NAME, sessionCookieOptions } from '@/lib/auth/session'
 import { COLLECTIONS } from '@/lib/constants/collections'
+import { ensureAffiliateRecord } from '@/lib/expansion/affiliates-admin'
 import type { SessionUser, UserRole } from '@/types'
 
 export async function POST(request: NextRequest) {
@@ -44,6 +45,15 @@ export async function POST(request: NextRequest) {
         createdAt: new Date(),
         updatedAt: new Date(),
       })
+    }
+
+    if (role === 'affiliate') {
+      await ensureAffiliateRecord(
+        adminDb,
+        decoded.uid,
+        name,
+        decoded.email || '',
+      )
     }
 
     const sessionUser: SessionUser = {

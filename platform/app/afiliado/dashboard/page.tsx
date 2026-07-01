@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation'
+import { AffiliateDashboardHome } from '@/components/affiliate/AffiliateDashboardHome'
 
-export default function AffiliateRootPage() {
-  redirect('/afiliado/dashboard/crm')
+export default function AffiliateDashboardPage() {
+  return <AffiliateDashboardHome />
 }

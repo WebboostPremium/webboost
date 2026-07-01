@@ -206,14 +206,21 @@ export interface Ticket {
   createdAt: Timestamp | Date
 }
 
+export type AffiliateStatus = 'active' | 'inactive' | 'pending'
+
 export interface Affiliate {
   id: string
   userId: string
+  name: string
+  email: string
   code: string
+  status: AffiliateStatus
   totalReferrals: number
   pendingCommission: number
   paidCommission: number
+  notes?: string
   createdAt: Timestamp | Date
+  updatedAt?: Timestamp | Date
 }
 
 export type ReferralStatus = 'pending' | 'converted' | 'paid'
